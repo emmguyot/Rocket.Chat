@@ -184,4 +184,19 @@ FlowRouter.notFound = {
 
 Meteor.startup(() => {
 	FlowRouter.initialize();
+	FlowRouter.triggers.enter([myTrigger]);
 });
+
+function myTrigger(context) {
+	window.history.replaceState({"path": context.path}, null, context.path);
+}
+
+window.pushStateOriginal = window.history.pushState.bind(window.history);
+window.history.pushState = function (state, x, path) {
+	if ((history.state !== undefined) && (history.state.path == path)) {
+		history.replaceState(state, x, path);
+	}
+	else {
+        window.pushStateOriginal(state, x, path);
+	}
+}
